@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Router, Response, Request } from 'express'
 import {
     getCurrentUser,
     getCurrentUserRoles,
@@ -6,7 +6,7 @@ import {
     logout,
     refreshAccessToken,
     register,
-    updateCurrentUser,
+    updateCurrentUser,   
 } from '../controllers/auth'
 import auth from '../middlewares/auth'
 
@@ -15,6 +15,7 @@ const authRouter = Router()
 authRouter.get('/user', auth, getCurrentUser)
 authRouter.patch('/me', auth, updateCurrentUser)
 authRouter.get('/user/roles', auth, getCurrentUserRoles)
+
 authRouter.post('/login', login)
 authRouter.get('/token', refreshAccessToken)
 authRouter.get('/logout', logout)

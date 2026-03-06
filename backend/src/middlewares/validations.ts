@@ -1,14 +1,48 @@
 import { Joi, celebrate } from 'celebrate'
 import { Types } from 'mongoose'
+import  escapeRegExp  from '../utils/escapeRegExp'
 
-// eslint-disable-next-line no-useless-escape
-export const phoneRegExp = /^(\+\d+)?(?:\s|-?|\(?\d+\)?)+$/
+export const phoneRegExp = /^\+?[\d\s\-\(\)]{10,30}$/;
+
 
 export enum PaymentType {
     Card = 'card',
     Online = 'online',
 }
-
+export const validateOrdersQuery = celebrate({
+    query: Joi.object().keys({
+    page: Joi.number().integer().min(1).default(1),
+    limit: Joi.number().integer().min(1).max(1000).default(10),
+    sortField: Joi.string()
+      .valid('createdAt', 'totalAmount', 'orderNumber', 'status')
+      .default('createdAt')
+      .messages({
+        'any.only': 'Недопустимое поле для сортировки',
+      }),
+    sortOrder: Joi.string()
+      .valid('asc', 'desc')
+      .default('desc')
+      .messages({
+        'any.only': 'Недопустимый порядок сортировки',
+      }),
+    status: Joi.alternatives().try(
+      Joi.string(),
+      Joi.array().items(Joi.string())
+    ),
+    totalAmountFrom: Joi.number().min(0),
+    totalAmountTo: Joi.number().min(0),
+    orderDateFrom: Joi.date().iso(),
+    orderDateTo: Joi.date().iso(),
+    search: Joi.string()
+      .max(50)
+      .pattern(/^[a-zA-Z0-9\s\-.,!?]+$/)
+      .optional()
+      .messages({
+        'string.max': 'Поисковый запрос слишком длинный (максимум 50 символов)',
+        'string.pattern.base': 'Недопустимые символы в поисковом запросе',
+      }),
+  }).options({ allowUnknown: true }),
+});
 // валидация id
 export const validateOrderBody = celebrate({
     body: Joi.object().keys({
@@ -35,17 +69,38 @@ export const validateOrderBody = celebrate({
         email: Joi.string().email().required().messages({
             'string.empty': 'Не указан email',
         }),
-        phone: Joi.string().required().pattern(phoneRegExp).messages({
-            'string.empty': 'Не указан телефон',
-        }),
+        phone: Joi.string()
+            .required()
+            .max(20) // ограничение длины
+            .pattern(phoneRegExp)
+            .messages({
+                'string.empty': 'Не указан телефон',
+                'string.max': 'Номер телефона слишком длинный (максимум 20 символов)',
+            }),
+        
         address: Joi.string().required().messages({
             'string.empty': 'Не указан адрес',
         }),
         total: Joi.number().required().messages({
             'string.empty': 'Не указана сумма заказа',
         }),
-        comment: Joi.string().optional().allow(''),
-    }),
+        comment: Joi.string()
+            .optional()
+            .allow('')
+            .custom((value, helpers) => {
+                if (value && typeof value === 'string') {
+                const sanitized = escapeRegExp(value);
+                if (sanitized !== value) {
+                    console.warn('Обнаружены опасные символы в комментарии, выполнено санитирование');
+                }
+                return sanitized;
+                }
+                return value;
+            })
+            .messages({
+                'string.base': 'Комментарий должен быть строкой',
+            }),
+        }),    
 })
 
 // валидация товара.
