@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Router, Response, Request } from 'express'
 import {
     getCurrentUser,
     getCurrentUserRoles,
@@ -6,7 +6,7 @@ import {
     logout,
     refreshAccessToken,
     register,
-    updateCurrentUser,
+    updateCurrentUser,   
 } from '../controllers/auth'
 import auth from '../middlewares/auth'
 

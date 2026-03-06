@@ -213,5 +213,5 @@ export {
     logout,
     refreshAccessToken,
     register,
-    updateCurrentUser,
+    updateCurrentUser,   
 }

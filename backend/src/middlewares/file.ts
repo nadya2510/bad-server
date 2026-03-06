@@ -1,6 +1,5 @@
 import { Request, Express } from 'express'
 import multer, { FileFilterCallback } from 'multer'
-import { mkdirSync } from 'fs'
 import { join } from 'path'
 
 type DestinationCallback = (error: Error | null, destination: string) => void
@@ -12,16 +11,15 @@ const storage = multer.diskStorage({
         _file: Express.Multer.File,
         cb: DestinationCallback
     ) => {
-        const destinationPath = join(
-            __dirname,
-            process.env.UPLOAD_PATH_TEMP
-                ? `../public/${process.env.UPLOAD_PATH_TEMP}`
-                : '../public'
+        cb(
+            null,
+            join(
+                __dirname,
+                process.env.UPLOAD_PATH_TEMP
+                    ? `../public/${process.env.UPLOAD_PATH_TEMP}`
+                    : '../public'
+            )
         )
-
-        mkdirSync(destinationPath, { recursive: true })
-
-        cb(null, destinationPath)
     },
 
     filename: (

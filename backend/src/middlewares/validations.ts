@@ -1,5 +1,11 @@
 import { Joi, celebrate } from 'celebrate'
 import { Types } from 'mongoose'
+<<<<<<< review
+import  escapeRegExp  from '../utils/escapeRegExp'
+
+export const phoneRegExp = /^\+?[\d\s\-\(\)]{10,30}$/;
+=======
+>>>>>>> main
 
 // eslint-disable-next-line no-useless-escape
 export const phoneRegExp = /^(\+\d+)?(?:\s|-?|\(?\d+\)?)+$/
