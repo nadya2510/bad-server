@@ -41,7 +41,7 @@ app.use((req, res, next) => {
     const publicEndpoints = [
         '/auth/login',
         '/auth/register',
-        '/csrf-token',
+        '/auth/csrf-token',
         '/upload',
     ] // Добавлено '/upload' для прохождения теста
 
