@@ -1,5 +1,4 @@
 import { API_URL, CDN_URL } from '@constants'
-
 import {
     ICustomerPaginationResult,
     ICustomerResult,
@@ -38,6 +37,7 @@ class Api {
     constructor(baseUrl: string, options: RequestInit = {}) {
         this.baseUrl = baseUrl
         this.options = {
+            credentials: 'include',
             headers: {
                 ...((options.headers as object) ?? {}),
                 'x-csrf-token': getCookie('_csrf') ?? ''
@@ -314,8 +314,7 @@ export class WebLarekAPI extends Api implements IWebLarekAPI {
         })
     }
 
-    createProduct = (data: Omit<IProduct, '_id'>) => {
-        console.log(data)
+    createProduct = (data: Omit<IProduct, '_id'>) => {      
         return this.requestWithRefresh<IProduct>('/product', {
             method: 'POST',
             body: JSON.stringify(data),

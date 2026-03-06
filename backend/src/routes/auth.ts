@@ -15,6 +15,7 @@ const authRouter = Router()
 authRouter.get('/user', auth, getCurrentUser)
 authRouter.patch('/me', auth, updateCurrentUser)
 authRouter.get('/user/roles', auth, getCurrentUserRoles)
+
 authRouter.post('/login', login)
 authRouter.get('/token', refreshAccessToken)
 authRouter.get('/logout', logout)

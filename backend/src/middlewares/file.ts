@@ -1,9 +1,17 @@
-import { Request, Express } from 'express'
+import { Request } from 'express'
 import multer, { FileFilterCallback } from 'multer'
-import { join } from 'path'
+import path, { join } from 'path'
+import { fileConfig } from '../config'
 
 type DestinationCallback = (error: Error | null, destination: string) => void
 type FileNameCallback = (error: Error | null, filename: string) => void
+
+const generateFileName = (originalName: string): string => {
+  const ext = path.extname(originalName).toLowerCase();
+  const timestamp = Date.now();
+  const random = Math.random().toString(36).substring(2, 8);
+  return `${timestamp}_${random}${ext}`;
+};
 
 const storage = multer.diskStorage({
     destination: (
@@ -15,8 +23,8 @@ const storage = multer.diskStorage({
             null,
             join(
                 __dirname,
-                process.env.UPLOAD_PATH_TEMP
-                    ? `../public/${process.env.UPLOAD_PATH_TEMP}`
+                fileConfig.uploadPathTemp
+                    ? `../public/${fileConfig.uploadPathTemp}`
                     : '../public'
             )
         )
@@ -27,7 +35,8 @@ const storage = multer.diskStorage({
         file: Express.Multer.File,
         cb: FileNameCallback
     ) => {
-        cb(null, file.originalname)
+        const uniqueName = generateFileName(file.originalname);
+        cb(null, uniqueName)
     },
 })
 
@@ -39,16 +48,25 @@ const types = [
     'image/svg+xml',
 ]
 
-const fileFilter = (
+const fileFilter = async (
     _req: Request,
     file: Express.Multer.File,
     cb: FileFilterCallback
 ) => {
+    const mimeType = file.mimetype.toLowerCase();
+     
     if (!types.includes(file.mimetype)) {
         return cb(null, false)
     }
-
+        
     return cb(null, true)
 }
 
-export default multer({ storage, fileFilter })
+export default multer({ 
+    storage, 
+    fileFilter, 
+    limits: {
+      fileSize: fileConfig.maxSizeFile // 10 МБ
+    },
+  
+ })
