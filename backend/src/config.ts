@@ -23,7 +23,6 @@ export const REFRESH_TOKEN = {
         } as CookieOptions,
     },
 }
-<<<<<<< review
 export const { ORIGIN_ALLOW = "http://localhost:5173" } = process.env;
 
 export const fileConfig = {    
@@ -50,5 +49,3 @@ export const CORS_OPTION = {
 export const LIMIT_JSON = '10kb'
 
 export const { CSRF_SECRET = randomBytes(32).toString('hex') } = process.env;
-=======
->>>>>>> main
